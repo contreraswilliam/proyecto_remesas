@@ -1,0 +1,169 @@
+# DIAS FESTIVOS EN COLOMBIA Y ESTADOS UNIDOS
+
+
+```{r include=FALSE, warning=FALSE}
+library(forecast)
+library(tseries)
+library(googledrive)
+library(timsac)
+library(ggplot2)
+library(changepoint)
+library(readxl)
+library(readr)
+library(tidyverse)
+library(dplyr)
+library(xts)
+```
+
+## Set de datos con los dias festivos en Colombia
+
+Se incluye en este set de datos otras festividades de Colombia que no necesariamente estan marcadas como dias festivos, pero son importantes para los modelos.
+
+```{r echo=FALSE}
+
+# Carga de festivos en Colombia
+festivos_col <- drive_get("Festivos_Colombia_2019_2024.xlsx")
+drive_download(festivos_col, path = "Festivos_Colombia_2019_2024.xlsx", overwrite = TRUE)
+fest_col <- read_excel("Festivos_Colombia_2019_2024.xlsx")
+
+head(fest_col)
+
+```
+
+## Set de datos con los dias festivos en Estados Unidos
+
+Se incluye en este set de datos otras festividades de Estados Unidos que no necesariamente estan marcadas como dias festivos, pero son importantes para los modelos.
+
+
+
+```{r}
+# Carga de festivos en Estados Unidos
+festivos_eeuu <- drive_get("Festivos_EEUU_2019_2024.xlsx")
+drive_download(festivos_eeuu, path = "Festivos_EEUU_2019_2024.xlsx", overwrite = TRUE)
+fest_eeuu <- read_excel("Festivos_EEUU_2019_2024.xlsx")
+
+head(fest_eeuu)
+```
+
+## Series de datos para feriados en Colombia y Estados Unidos
+
+### Colombia
+
+```{r echo=FALSE}
+fest_col$Fecha <- as.POSIXct(fest_col$Fecha)
+fest_col$Festividad_cod <- as.numeric(factor(fest_col$Festividad))
+serie_fest_col <- xts(fest_col$Festividad_cod, order.by = fest_col$Fecha)
+```
+
+```{r echo=FALSE}
+head (serie_fest_col)
+class(serie_fest_col)
+start(serie_fest_col)
+end(serie_fest_col)
+```
+
+```{r echo=FALSE}
+plot(serie_fest_col, col = "blue", main = "Serie de Tiempo: Feriados Colombia", ylab = "Festividad")
+```
+
+**Prueba de Dickey-Fuller Aumentada (ADF)**
+
+```{r echo=FALSE}
+adf_test_col <- adf.test(serie_fest_col)
+adf_test_col
+```
+
+
+### Estados Unidos
+
+```{r echo=FALSE}
+fest_eeuu$Fecha <- as.POSIXct(fest_eeuu$Fecha)
+fest_eeuu$Festividad_cod <- as.numeric(factor(fest_eeuu$Festividad))
+serie_fest_eeuu <- xts(fest_eeuu$Festividad_cod, order.by = fest_eeuu$Fecha)
+```
+
+
+```{r echo=FALSE}
+head (serie_fest_eeuu)
+class(serie_fest_eeuu)
+start(serie_fest_eeuu)
+end(serie_fest_eeuu)
+```
+
+```{r echo=FALSE}
+plot(serie_fest_eeuu, col = "red", main = "Serie de Tiempo: Feriados EEUU", ylab = "Festividad")
+```
+
+**Prueba de Dickey-Fuller Aumentada (ADF)**
+
+```{r echo=FALSE}
+adf_test_eeuu <- adf.test(serie_fest_eeuu)
+adf_test_eeuu
+```
+
+## Tratamiento al set de datos original
+
+Inicialmente se agrupa la informacion or fecha de origen y canal para obtener el total del monto en dolares.
+
+```{r echo=FALSE}
+Datos_REM <- Datos_filtrados %>%
+  group_by(Fecha_Origen, Canal) %>%
+  summarise(Monto_Total_USD = sum(Monto_USD, na.rm = TRUE), .groups = 'drop')
+
+head(Datos_REM)
+```
+
+Seguidamente, se transforma la coluna Canal, de tal forma que se visualice el porcentaje del monto que se origino por cada uno de ellos, reduciendo a una sola fila por cada fecha de origen de la remasa.
+
+```{r echo=FALSE}
+fest_col <- fest_col %>%
+  mutate(Fecha = as.Date(Fecha))
+
+# Calcular el total de Monto_Total_USD por Fecha_Origen
+Datos_remesas <- Datos_REM %>%
+  group_by(Fecha_Origen) %>%
+  mutate(Total_Fecha = sum(Monto_Total_USD)) %>%
+  ungroup()
+
+# Calcular el porcentaje de cada canal por Fecha_Origen
+Datos_remesas <- Datos_remesas %>%
+  pivot_wider(names_from = Canal, values_from = Monto_Total_USD, values_fn = list(Monto_Total_USD = sum), values_fill = list(Monto_Total_USD = 0)) %>%
+  mutate(
+    Porcentaje_APN = ifelse(!is.na(APN), (APN / Total_Fecha) * 100, 0),
+    Porcentaje_Corr = ifelse(!is.na(Corresponsales), (Corresponsales / Total_Fecha) * 100, 0),
+    Porcentaje_RP = ifelse(!is.na(RedPropia), (RedPropia / Total_Fecha) * 100, 0)
+  ) %>%
+  select(Fecha_Origen, Porcentaje_APN, Porcentaje_Corr, Porcentaje_RP, Total_Fecha) %>%
+  mutate(
+    Porcentaje_APN = paste0(round(Porcentaje_APN, 2), "%"),
+    Porcentaje_Corr = paste0(round(Porcentaje_Corr, 2), "%"),
+    Porcentaje_RP = paste0(round(Porcentaje_RP, 2), "%"),
+    Monto_Total_USD = Total_Fecha
+  ) %>%
+  select(-Total_Fecha)
+
+# Ver el resultado
+head(Datos_remesas)
+```
+
+### Variable festivo en colombia
+
+Se añade la columna Festivo_Col al set de datos tratado anteriormente, dicha columna permite identificar con un 1 si el dia de originacion es festivo o 0 en caso contrario.
+
+
+```{r echo=FALSE}
+Datos_remesas <- Datos_remesas %>%
+  mutate(Festivo_Col = ifelse(Fecha_Origen %in% fest_col$Fecha, 1, 0))
+head(Datos_remesas)
+```
+
+### Variable festivo en Estados Unidos
+
+Se añade la columna Festivo_eeuu al set de datos tratado anteriormente, dicha columna permite identificar con un 1 si el dia de originacion es festivo o 0 en caso contrario.
+
+```{r echo=FALSE}
+Datos_remesas <- Datos_remesas %>%
+  mutate(Festivo_eeuu = ifelse(Fecha_Origen %in% fest_eeuu$Fecha, 1, 0))
+head(Datos_remesas)
+```
+

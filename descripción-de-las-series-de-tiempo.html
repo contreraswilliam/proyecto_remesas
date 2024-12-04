@@ -23,7 +23,7 @@
 <meta name="author" content="Analisis de Series de Tiempo Grupo 5 - William Contreras, Camilo Espinoza, Jorge Agredo" />
 
 
-<meta name="date" content="2024-12-03" />
+<meta name="date" content="2024-12-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="remesas.html"/>
-
+<link rel="next" href="dias-festivos-en-colombia-y-estados-unidos.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -147,11 +147,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="2" data-path="descripción-de-las-series-de-tiempo.html"><a href="descripción-de-las-series-de-tiempo.html"><i class="fa fa-check"></i><b>2</b> DESCRIPCIÓN DE LAS SERIES DE TIEMPO</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="descripción-de-las-series-de-tiempo.html"><a href="descripción-de-las-series-de-tiempo.html#serie-de-tiempo-por-fecha-de-pago"><i class="fa fa-check"></i><b>2.1</b> Serie de tiempo por Fecha de Pago</a>
+<li class="chapter" data-level="2.1" data-path="descripción-de-las-series-de-tiempo.html"><a href="descripción-de-las-series-de-tiempo.html#serie-de-tiempo-por-fecha-de-origen-de-la-remesa."><i class="fa fa-check"></i><b>2.1</b> Serie de tiempo por fecha de origen de la remesa.</a>
 <ul>
 <li class="chapter" data-level="2.1.1" data-path="descripción-de-las-series-de-tiempo.html"><a href="descripción-de-las-series-de-tiempo.html#uso-de-la-librería-xts"><i class="fa fa-check"></i><b>2.1.1</b> Uso de la librería “XTS”</a></li>
 <li class="chapter" data-level="2.1.2" data-path="descripción-de-las-series-de-tiempo.html"><a href="descripción-de-las-series-de-tiempo.html#gráfico-de-rezago-para-la-serie-de-tiempo"><i class="fa fa-check"></i><b>2.1.2</b> Gráfico de rezago para la serie de tiempo</a></li>
 <li class="chapter" data-level="2.1.3" data-path="descripción-de-las-series-de-tiempo.html"><a href="descripción-de-las-series-de-tiempo.html#promedios-móviles"><i class="fa fa-check"></i><b>2.1.3</b> Promedios móviles</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="dias-festivos-en-colombia-y-estados-unidos.html"><a href="dias-festivos-en-colombia-y-estados-unidos.html"><i class="fa fa-check"></i><b>3</b> DIAS FESTIVOS EN COLOMBIA Y ESTADOS UNIDOS</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="dias-festivos-en-colombia-y-estados-unidos.html"><a href="dias-festivos-en-colombia-y-estados-unidos.html#set-de-datos-con-los-dias-festivos-en-colombia"><i class="fa fa-check"></i><b>3.1</b> Set de datos con los dias festivos en Colombia</a></li>
+<li class="chapter" data-level="3.2" data-path="dias-festivos-en-colombia-y-estados-unidos.html"><a href="dias-festivos-en-colombia-y-estados-unidos.html#set-de-datos-con-los-dias-festivos-en-estados-unidos"><i class="fa fa-check"></i><b>3.2</b> Set de datos con los dias festivos en Estados Unidos</a></li>
+<li class="chapter" data-level="3.3" data-path="dias-festivos-en-colombia-y-estados-unidos.html"><a href="dias-festivos-en-colombia-y-estados-unidos.html#series-de-datos-para-feriados-en-colombia-y-estados-unidos"><i class="fa fa-check"></i><b>3.3</b> Series de datos para feriados en Colombia y Estados Unidos</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="dias-festivos-en-colombia-y-estados-unidos.html"><a href="dias-festivos-en-colombia-y-estados-unidos.html#colombia"><i class="fa fa-check"></i><b>3.3.1</b> Colombia</a></li>
+<li class="chapter" data-level="3.3.2" data-path="dias-festivos-en-colombia-y-estados-unidos.html"><a href="dias-festivos-en-colombia-y-estados-unidos.html#estados-unidos"><i class="fa fa-check"></i><b>3.3.2</b> Estados Unidos</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="dias-festivos-en-colombia-y-estados-unidos.html"><a href="dias-festivos-en-colombia-y-estados-unidos.html#tratamiento-al-set-de-datos-original"><i class="fa fa-check"></i><b>3.4</b> Tratamiento al set de datos original</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="dias-festivos-en-colombia-y-estados-unidos.html"><a href="dias-festivos-en-colombia-y-estados-unidos.html#variable-festivo-en-colombia"><i class="fa fa-check"></i><b>3.4.1</b> Variable festivo en colombia</a></li>
+<li class="chapter" data-level="3.4.2" data-path="dias-festivos-en-colombia-y-estados-unidos.html"><a href="dias-festivos-en-colombia-y-estados-unidos.html#variable-festivo-en-estados-unidos"><i class="fa fa-check"></i><b>3.4.2</b> Variable festivo en Estados Unidos</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -193,8 +208,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Como se puede observar en la tabla resumen; la base de datos se compone de 11 variables:</p>
 <p>2 tipo fecha: “Fecha_pago” y “Fecha_Origen”, 5 numericas: “Monto_USD”, “Monto_COP” ,“Tasa de pago”, “TRM” y “Dif Tasa” y 4 tipo texto: “Tipo de Pago”, “Pais_Origen”, “Canal” y “Dif dias”.</p>
 <p>Con el objetivo de observar el comportamiento de las remesas en el tiempo, se realizará la descripción por la variable tipo fecha Fecha_Origen.</p>
-<div id="serie-de-tiempo-por-fecha-de-pago" class="section level2 hasAnchor" number="2.1">
-<h2><span class="header-section-number">2.1</span> Serie de tiempo por Fecha de Pago<a href="descripción-de-las-series-de-tiempo.html#serie-de-tiempo-por-fecha-de-pago" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="serie-de-tiempo-por-fecha-de-origen-de-la-remesa." class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Serie de tiempo por fecha de origen de la remesa.<a href="descripción-de-las-series-de-tiempo.html#serie-de-tiempo-por-fecha-de-origen-de-la-remesa." class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Se agrupa el monto en dólares por la variable objetivo.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="descripción-de-las-series-de-tiempo.html#cb2-1" tabindex="-1"></a>Datos_df<span class="sc">$</span>Fecha_Origen <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(Datos_df<span class="sc">$</span>Fecha_Origen)</span>
 <span id="cb2-2"><a href="descripción-de-las-series-de-tiempo.html#cb2-2" tabindex="-1"></a></span>
@@ -263,8 +278,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-<a href="remesas.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="remesas.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="dias-festivos-en-colombia-y-estados-unidos.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

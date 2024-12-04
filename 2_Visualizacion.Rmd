@@ -42,7 +42,7 @@ Como se puede observar en la tabla resumen; la base de datos se compone de 11 va
 
 Con el objetivo de observar el comportamiento de las remesas en el tiempo, se realizará la descripción por la variable tipo fecha Fecha_Origen.
 
-## Serie de tiempo por Fecha de Pago
+## Serie de tiempo por fecha de origen de la remesa.
 
 Se agrupa el monto en dólares por la variable objetivo.
 
